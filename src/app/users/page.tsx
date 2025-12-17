@@ -1,4 +1,5 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import {
   Table,
@@ -13,7 +14,6 @@ import {
   Box,
   CircularProgress,
   Typography,
-  Tab,
 } from '@mui/material';
 
 import { useUsersStore } from '@/src/store/usersStore';
@@ -22,7 +22,7 @@ import { useRouter } from 'next/navigation';
 
 const LIMIT = 9;
 
-const UsersPage = () => {
+export default function UsersPage() {
   const { users, total, loading, fetchUsers } = useUsersStore();
   const router = useRouter();
 
@@ -35,46 +35,80 @@ const UsersPage = () => {
 
   return (
     <ProtectedRoute>
-      <Box p={3}>
-        <Typography variant='h4' mb={2}>
-          Users
-        </Typography>
+      <Box
+        p={3}
+        sx={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+        }}
+      >
+        {/* Header */}
+        <Box mb={3}>
+          <Typography variant='h4' fontWeight={600}>
+            Users
+          </Typography>
+          <Typography color='text.secondary'>
+            View and manage registered users
+          </Typography>
+        </Box>
 
         {/* Search */}
+        <Box mb={2}>
+          <TextField
+            label='Search users'
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+            fullWidth
+            size='small'
+          />
+        </Box>
 
-        <TextField
-          label='Search Users'
-          value={search}
-          onChange={(e) => {
-            setPage(1);
-            setSearch(e.target.value);
-          }}
-          fullWidth
-          margin='normal'
-        />
-
-        {/* Loading */}
-
+        {/* Content */}
         {loading ? (
-          <CircularProgress />
+          <Box display='flex' justifyContent='center' mt={4}>
+            <CircularProgress />
+          </Box>
+        ) : users.length === 0 ? (
+          <Typography color='text.secondary' mt={4} align='center'>
+            No users found
+          </Typography>
         ) : (
-          <TableContainer>
+          <TableContainer component={Paper} elevation={1}>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Gender</TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Company</TableCell>
+                <TableRow sx={{ backgroundColor: '#fafafa' }}>
+                  <TableCell>
+                    <strong>Name</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Email</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Gender</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Phone</strong>
+                  </TableCell>
+                  <TableCell>
+                    <strong>Company</strong>
+                  </TableCell>
                 </TableRow>
               </TableHead>
+
               <TableBody>
                 {users.map((u) => (
                   <TableRow
                     key={u.id}
                     hover
-                    sx={{ cursor: 'pointer' }}
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: '#f5f5f5',
+                      },
+                    }}
                     onClick={() => router.push(`/users/${u.id}`)}
                   >
                     <TableCell>
@@ -92,8 +126,7 @@ const UsersPage = () => {
         )}
 
         {/* Pagination */}
-
-        <Box display={'flex'} justifyContent={'center'} mt={2}>
+        <Box display='flex' justifyContent='center' mt={3}>
           <Pagination
             count={Math.ceil(total / LIMIT)}
             page={page}
@@ -103,6 +136,4 @@ const UsersPage = () => {
       </Box>
     </ProtectedRoute>
   );
-};
-
-export default UsersPage;
+}

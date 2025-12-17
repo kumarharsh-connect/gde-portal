@@ -39,6 +39,7 @@ export default function ProductsPage() {
 
   const router = useRouter();
 
+  // Fetch products
   useEffect(() => {
     if (category) {
       fetchByCategory(category, LIMIT, (page - 1) * LIMIT);
@@ -47,72 +48,121 @@ export default function ProductsPage() {
     }
   }, [page, search, category, fetchProducts, fetchByCategory]);
 
+  // Fetch categories
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
   return (
     <ProtectedRoute>
-      <Box p={3}>
-        <Typography variant='h4' mb={2}>
-          Products
-        </Typography>
+      <Box
+        p={3}
+        sx={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+        }}
+      >
+        {/* Header */}
+        <Box mb={3}>
+          <Typography variant='h4' fontWeight={600}>
+            Products
+          </Typography>
+          <Typography color='text.secondary'>
+            Browse and manage available products
+          </Typography>
+        </Box>
 
-        {/* Search */}
-        <TextField
-          label='Search Products'
-          value={search}
-          onChange={(e) => {
-            setPage(1);
-            setCategory('');
-            setSearch(e.target.value);
-          }}
-          fullWidth
-          margin='normal'
-        />
+        {/* Filters */}
+        <Grid container spacing={2} mb={3}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              label='Search products'
+              value={search}
+              onChange={(e) => {
+                setPage(1);
+                setCategory('');
+                setSearch(e.target.value);
+              }}
+              fullWidth
+              size='small'
+            />
+          </Grid>
 
-        <FormControl fullWidth margin='normal'>
-          <InputLabel>Category</InputLabel>
-          <Select
-            value={category}
-            label='Category'
-            onChange={(e) => {
-              setPage(1);
-              setSearch('');
-              setCategory(e.target.value);
-            }}
-          >
-            <MenuItem value=''>All Categories</MenuItem>
-            {categories.map((c, index) => (
-              <MenuItem key={`${c.slug}-${index}`} value={c.slug}>
-                {c.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <FormControl fullWidth size='small'>
+              <InputLabel>Category</InputLabel>
+              <Select
+                value={category}
+                label='Category'
+                onChange={(e) => {
+                  setPage(1);
+                  setSearch('');
+                  setCategory(e.target.value);
+                }}
+              >
+                <MenuItem value=''>All Categories</MenuItem>
+                {categories.map((c, index) => (
+                  <MenuItem key={`${c.slug}-${index}`} value={c.slug}>
+                    {c.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
 
-        {/* Loading */}
+        {/* Content */}
         {loading ? (
-          <CircularProgress />
+          <Box display='flex' justifyContent='center' mt={4}>
+            <CircularProgress />
+          </Box>
+        ) : products.length === 0 ? (
+          <Typography color='text.secondary' align='center' mt={4}>
+            No products found
+          </Typography>
         ) : (
-          <Grid container spacing={2}>
+          <Grid container spacing={3}>
             {products.map((p) => (
-              <Grid key={p.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={p.id}>
                 <Card
-                  sx={{ cursor: 'pointer' }}
                   onClick={() => router.push(`/products/${p.id}`)}
+                  sx={{
+                    cursor: 'pointer',
+                    height: '100%',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: 4,
+                    },
+                  }}
                 >
                   <CardMedia
                     component='img'
-                    height='140'
+                    height='160'
                     image={p.thumbnail}
                     alt={p.title}
                   />
                   <CardContent>
-                    <Typography variant='h6'>{p.title}</Typography>
-                    <Typography>$ {p.price}</Typography>
-                    <Typography>Category: {p.category}</Typography>
-                    <Typography>Rating: {p.rating}</Typography>
+                    <Typography
+                      variant='subtitle1'
+                      fontWeight={600}
+                      gutterBottom
+                      noWrap
+                    >
+                      {p.title}
+                    </Typography>
+
+                    <Typography variant='body2' color='text.secondary'>
+                      Category: {p.category}
+                    </Typography>
+
+                    <Typography mt={1}>
+                      <strong>$ {p.price}</strong>
+                    </Typography>
+
+                    <Typography variant='body2' color='text.secondary'>
+                      Rating: {p.rating}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -121,7 +171,7 @@ export default function ProductsPage() {
         )}
 
         {/* Pagination */}
-        <Box display='flex' justifyContent='center' mt={3}>
+        <Box display='flex' justifyContent='center' mt={4}>
           <Pagination
             count={Math.ceil(total / LIMIT)}
             page={page}
