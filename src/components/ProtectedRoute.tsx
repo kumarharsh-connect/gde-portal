@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         <Box className='text-center'>
           <CircularProgress
             size={60}
-            className='mb-4 text-blue-600'
+            className='mb-4 text-primary'
             thickness={4}
           />
           <Typography variant='h6' className='text-gray-600 font-medium'>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Grid,
@@ -52,6 +52,8 @@ export default function ProductsPage() {
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
+
+  const pageCount = useMemo(() => Math.ceil(total / LIMIT), [total]);
 
   return (
     <ProtectedRoute>
@@ -173,7 +175,7 @@ export default function ProductsPage() {
         {/* Pagination */}
         <Box display='flex' justifyContent='center' mt={4}>
           <Pagination
-            count={Math.ceil(total / LIMIT)}
+            count={pageCount}
             page={page}
             onChange={(_, value) => setPage(value)}
             disabled={!!category}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -32,6 +32,8 @@ export default function UsersPage() {
   useEffect(() => {
     fetchUsers(LIMIT, (page - 1) * LIMIT, search);
   }, [page, search, fetchUsers]);
+
+  const pageCount = useMemo(() => Math.ceil(total / LIMIT), [total]);
 
   return (
     <ProtectedRoute>
@@ -128,7 +130,7 @@ export default function UsersPage() {
         {/* Pagination */}
         <Box display='flex' justifyContent='center' mt={3}>
           <Pagination
-            count={Math.ceil(total / LIMIT)}
+            count={pageCount}
             page={page}
             onChange={(_, value) => setPage(value)}
           />

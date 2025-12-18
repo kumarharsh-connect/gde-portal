@@ -3,11 +3,16 @@
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter, usePathname } from 'next/navigation';
+import { memo, useCallback } from 'react';
 
-export default function Navbar() {
+function Navbar() {
   const { status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+
+  const handleLogout = useCallback(() => {
+    signOut({ callbackUrl: '/login' });
+  }, []);
 
   if (status !== 'authenticated') return null;
 
@@ -45,14 +50,12 @@ export default function Navbar() {
         </Box>
 
         {/* Right: Logout Button */}
-        <Button
-          variant='outlined'
-          color='inherit'
-          onClick={() => signOut({ callbackUrl: '/login' })}
-        >
+        <Button variant='outlined' color='inherit' onClick={handleLogout}>
           Logout
         </Button>
       </Toolbar>
     </AppBar>
   );
 }
+
+export default memo(Navbar);
